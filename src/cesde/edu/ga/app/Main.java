@@ -7,11 +7,11 @@ import cesde.edu.ga.model.Group;
 import cesde.edu.ga.model.GroupSubject;
 import cesde.edu.ga.model.Period;
 import cesde.edu.ga.model.Program;
-import co.edu.cesde.ga.model.Role;
-import co.edu.cesde.ga.model.Student;
-import co.edu.cesde.ga.model.Subject;
-import co.edu.cesde.ga.model.Teacher;
-import co.edu.cesde.ga.model.User;
+import cesde.edu.ga.model.Role;
+import cesde.edu.ga.model.Student;
+import cesde.edu.ga.model.Subject;
+import cesde.edu.ga.model.Teacher;
+import cesde.edu.ga.model.User;
 import cesde.edu.ga.model.UserRole;
 
 public class Main {

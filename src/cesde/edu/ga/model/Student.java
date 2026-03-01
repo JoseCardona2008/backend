@@ -1,4 +1,4 @@
-package co.edu.cesde.ga.model;
+package cesde.edu.ga.model;
 
 public class Student {
 
