@@ -171,34 +171,6 @@ public class Main {
         System.out.println("Description: " + role2.getDescription());
 
 
-        // Student
-        Student student = new Student();
-
-        student.setUserId(5L);
-        student.setCode("12345");
-        student.setDocumentNumber("104050678");
-        student.setFirstName("Santi");
-        student.setLastName("Calde");
-        student.setStatus("ACTIVE");
-        student.setBirthDate("2006-04-04");
-
-        System.out.println("User ID: " + student.getUserId());
-        System.out.println("Code: " + student.getCode());
-        System.out.println("Document Number: " + student.getDocumentNumber());
-        System.out.println("First Name: " + student.getFirstName());
-        System.out.println("Last Name: " + student.getLastName());
-        System.out.println("Status: " + student.getStatus());
-        System.out.println("Birth Date: " + student.getBirthDate());
-
-        Student student2 = new Student(6L, "123456", "103689038", "Juan", "David", "INACTIVE", "1999-12-31");
-
-        System.out.println("User ID: " + student2.getUserId());
-        System.out.println("Code: " + student2.getCode());
-        System.out.println("Document Number: " + student2.getDocumentNumber());
-        System.out.println("First Name: " + student2.getFirstName());
-        System.out.println("Last Name: " + student2.getLastName());
-        System.out.println("Status: " + student2.getStatus());
-        System.out.println("Birth Date: " + student2.getBirthDate());
 
 
         // Subject
@@ -223,33 +195,6 @@ public class Main {
         System.out.println("Name: " + subject2.getName());
         System.out.println("Credits: " + subject2.getCredits());
         System.out.println("Program ID: " + subject2.getProgramId());
-
-
-        // Teacher
-        Teacher teacher = new Teacher();
-
-        teacher.setUserId(3L);
-        teacher.setCode("789012");
-        teacher.setDocumentNumber("1122334455");
-        teacher.setFirstName("Alice");
-        teacher.setLastName("Johnson");
-        teacher.setStatus("ACTIVE");
-
-        System.out.println("User ID: " + teacher.getUserId());
-        System.out.println("Code: " + teacher.getCode());
-        System.out.println("Document Number: " + teacher.getDocumentNumber());
-        System.out.println("First Name: " + teacher.getFirstName());
-        System.out.println("Last Name: " + teacher.getLastName());
-        System.out.println("Status: " + teacher.getStatus());
-
-        Teacher teacher2 = new Teacher(4L, "123456", "1040237382", "Luis", "Goenaga", "ACTIVE");
-
-        System.out.println("User ID: " + teacher2.getUserId());
-        System.out.println("Code: " + teacher2.getCode());
-        System.out.println("Document Number: " + teacher2.getDocumentNumber());
-        System.out.println("First Name: " + teacher2.getFirstName());
-        System.out.println("Last Name: " + teacher2.getLastName());
-        System.out.println("Status: " + teacher2.getStatus());
 
 
         // User
