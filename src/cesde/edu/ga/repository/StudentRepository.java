@@ -11,7 +11,6 @@ public interface StudentRepository {
 
     Student findById(Long studentId);
 
-
     Student findByDocumentNumber(String documentNumber);
 
     boolean update(Student updatedStudent);
