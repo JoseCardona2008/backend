@@ -18,6 +18,10 @@ public class Teacher extends Person {
     }
 
     public void setTeacherId(Long teacherId) {
+        if (teacherId == null || teacherId <= 0) {
+            throw new IllegalArgumentException("El id del profesor es obligatorio");
+        }
+
         this.teacherId = teacherId;
     }
 
