@@ -27,6 +27,10 @@ public class Student extends Person {
     }
 
     public void setBirthDate(String birthDate) {
+        if (birthDate == null || birthDate.trim().isEmpty()) {
+            throw new IllegalArgumentException("La fecha de nacimiento es obligatorio");
+        }
+
         this.birthDate = birthDate;
     }
 
