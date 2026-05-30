@@ -6,7 +6,7 @@ public class PersonExceptions extends RuntimeException {
         super(mensaje);
     }
 
-    public static PersonExceptions noEncontrada(Long id) {
+    public  PersonExceptions noEncontrada(Long id) {
         return new PersonExceptions("Persona no encontrada con id: " + id);
     }
 

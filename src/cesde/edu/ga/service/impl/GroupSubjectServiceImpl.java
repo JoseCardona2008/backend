@@ -3,6 +3,8 @@ package cesde.edu.ga.service.impl;
 import cesde.edu.ga.model.GroupSubject;
 import cesde.edu.ga.repository.GroupSubjectRepository;
 import cesde.edu.ga.service.GroupSubjectService;
+import cesde.edu.ga.exceptions.GroupSubExceptions;
+
 import java.util.List;
 
 public class GroupSubjectServiceImpl implements GroupSubjectService {
@@ -15,36 +17,56 @@ public class GroupSubjectServiceImpl implements GroupSubjectService {
 
     @Override
     public GroupSubject create(GroupSubject groupSubject) {
-        if (isInvalidGroupSubject(groupSubject)) {
-            return null;
+        if (groupSubject == null) {
+            throw new GroupSubExceptions("GroupSubject cannot be null");
         }
+
+        if (isInvalidGroupSubject(groupSubject)) {
+            throw new GroupSubExceptions("Invalid GroupSubject data");
+        }
+
         return groupSubjectRepository.create(groupSubject);
     }
 
     @Override
     public boolean update(GroupSubject groupSubject) {
-        if (isInvalidGroupSubject(groupSubject)
-                || groupSubject.getGroupSubjectId() == null
-                || groupSubject.getGroupSubjectId() <= 0L) {
-            return false;
+        if (groupSubject == null) {
+            throw new GroupSubExceptions("GroupSubject cannot be null");
         }
+
+        if (groupSubject.getGroupSubjectId() == null || groupSubject.getGroupSubjectId() <= 0L) {
+            throw new GroupSubExceptions("GroupSubject id is invalid");
+        }
+
+        if (isInvalidGroupSubject(groupSubject)) {
+            throw new GroupSubExceptions("Invalid GroupSubject data");
+        }
+
         return groupSubjectRepository.update(groupSubject);
     }
 
     @Override
     public boolean delete(Long groupSubjectId) {
         if (groupSubjectId == null || groupSubjectId <= 0L) {
-            return false;
+            throw new GroupSubExceptions("GroupSubject id is invalid");
         }
+
         return groupSubjectRepository.delete(groupSubjectId);
     }
 
     @Override
     public GroupSubject findById(Long groupSubjectId) {
         if (groupSubjectId == null || groupSubjectId <= 0L) {
-            return null;
+            throw new GroupSubExceptions("GroupSubject id is invalid");
         }
-        return groupSubjectRepository.findById(groupSubjectId);
+
+        GroupSubject groupSubject = groupSubjectRepository.findById(groupSubjectId);
+
+        if (groupSubject == null) {
+            throw GroupSubExceptions.noEncontrado(groupSubjectId);
+        }
+
+        return groupSubject;
     }
 
     @Override
@@ -55,32 +77,40 @@ public class GroupSubjectServiceImpl implements GroupSubjectService {
     @Override
     public GroupSubject findByGroupId(Long groupId) {
         if (groupId == null || groupId <= 0L) {
-            return null;
+            throw new GroupSubExceptions("Group id is invalid");
         }
+
         return groupSubjectRepository.findByGroupId(groupId);
     }
 
     @Override
     public GroupSubject findBySubjectId(Long subjectId) {
         if (subjectId == null || subjectId <= 0L) {
-            return null;
+            throw new GroupSubExceptions("Subject id is invalid");
         }
+
         return groupSubjectRepository.findBySubjectId(subjectId);
     }
 
     @Override
     public GroupSubject findByTeacherId(Long teacherId) {
         if (teacherId == null || teacherId <= 0L) {
-            return null;
+            throw new GroupSubExceptions("Teacher id is invalid");
         }
+
         return groupSubjectRepository.findByTeacherId(teacherId);
     }
 
     @Override
     public boolean existsByGroupIdAndSubjectId(Long groupId, Long subjectId) {
-        if (groupId == null || subjectId == null) {
-            return false;
+        if (groupId == null || groupId <= 0L) {
+            throw new GroupSubExceptions("Group id is invalid");
         }
+
+        if (subjectId == null || subjectId <= 0L) {
+            throw new GroupSubExceptions("Subject id is invalid");
+        }
+
         return groupSubjectRepository.existsByGroupIdAndSubjectId(groupId, subjectId);
     }
 

@@ -3,6 +3,8 @@ package cesde.edu.ga.service.impl;
 import cesde.edu.ga.model.Person;
 import cesde.edu.ga.repository.PersonRepository;
 import cesde.edu.ga.service.PersonService;
+import cesde.edu.ga.exceptions.PersonExceptions;
+
 import java.util.List;
 
 public class PersonServiceImpl implements PersonService {
@@ -15,36 +17,52 @@ public class PersonServiceImpl implements PersonService {
 
     @Override
     public Person create(Person person) {
-        if (isInvalidPerson(person)) {
-            return null;
+        if (person == null) {
+            throw new PersonExceptions("Person cannot be null");
         }
+
+        if (isInvalidPerson(person)) {
+            throw new PersonExceptions("Invalid person data");
+        }
+
         return personRepository.create(person);
     }
 
     @Override
     public boolean update(Person person) {
-        if (isInvalidPerson(person)
-                || person.getUserId() == null
-                || person.getUserId() <= 0L) {
-            return false;
+        if (person == null) {
+            throw new PersonExceptions("Person cannot be null");
         }
+
+        if (person.getUserId() == null || person.getUserId() <= 0L) {
+            throw new PersonExceptions("User id is invalid");
+        }
+
+        if (isInvalidPerson(person)) {
+            throw new PersonExceptions("Invalid person data");
+        }
+
         return personRepository.update(person);
     }
 
     @Override
     public boolean delete(Long userId) {
         if (userId == null || userId <= 0L) {
-            return false;
+            throw new PersonExceptions("User id is invalid");
         }
+
         return personRepository.delete(userId);
     }
 
     @Override
     public Person findById(Long userId) {
         if (userId == null || userId <= 0L) {
-            return null;
+            throw new PersonExceptions("User id is invalid");
         }
-        return personRepository.findById(userId);
+
+        Person person = personRepository.findById(userId);
+
+        return person;
     }
 
     @Override
@@ -55,30 +73,32 @@ public class PersonServiceImpl implements PersonService {
     @Override
     public Person findByDocumentNumber(String documentNumber) {
         if (documentNumber == null || documentNumber.trim().isBlank()) {
-            return null;
+            throw new PersonExceptions("Document number cannot be null or empty");
         }
+
         return personRepository.findByDocumentNumber(documentNumber);
     }
 
     @Override
     public List<Person> findByStatus(String status) {
         if (status == null || status.trim().isBlank()) {
-            return List.of();
+            throw new PersonExceptions("Status cannot be null or empty");
         }
+
         return personRepository.findByStatus(status);
     }
 
     @Override
     public boolean existsByDocumentNumber(String documentNumber) {
         if (documentNumber == null || documentNumber.trim().isBlank()) {
-            return false;
+            throw new PersonExceptions("Document number cannot be null or empty");
         }
+
         return personRepository.existsByDocumentNumber(documentNumber);
     }
 
     private boolean isInvalidPerson(Person person) {
-        return person == null
-                || isBlank(person.getDocumentType())
+        return isBlank(person.getDocumentType())
                 || isBlank(person.getDocumentNumber())
                 || isBlank(person.getFirstName())
                 || isBlank(person.getLastName())

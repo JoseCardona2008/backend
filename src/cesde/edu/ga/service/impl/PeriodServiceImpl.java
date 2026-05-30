@@ -3,6 +3,8 @@ package cesde.edu.ga.service.impl;
 import cesde.edu.ga.model.Period;
 import cesde.edu.ga.repository.PeriodRepository;
 import cesde.edu.ga.service.PeriodService;
+import cesde.edu.ga.exceptions.PeriodExceptions;
+
 import java.util.List;
 
 public class PeriodServiceImpl implements PeriodService {
@@ -15,36 +17,56 @@ public class PeriodServiceImpl implements PeriodService {
 
     @Override
     public Period create(Period period) {
-        if (isInvalidPeriod(period)) {
-            return null;
+        if (period == null) {
+            throw new PeriodExceptions("Period cannot be null");
         }
+
+        if (isInvalidPeriod(period)) {
+            throw new PeriodExceptions("Invalid period data");
+        }
+
         return periodRepository.create(period);
     }
 
     @Override
     public boolean update(Period period) {
-        if (isInvalidPeriod(period)
-                || period.getPeriodId() == null
-                || period.getPeriodId() <= 0L) {
-            return false;
+        if (period == null) {
+            throw new PeriodExceptions("Period cannot be null");
         }
+
+        if (period.getPeriodId() == null || period.getPeriodId() <= 0L) {
+            throw new PeriodExceptions("Period id is invalid");
+        }
+
+        if (isInvalidPeriod(period)) {
+            throw new PeriodExceptions("Invalid period data");
+        }
+
         return periodRepository.update(period);
     }
 
     @Override
     public boolean delete(Long periodId) {
         if (periodId == null || periodId <= 0L) {
-            return false;
+            throw new PeriodExceptions("Period id is invalid");
         }
+
         return periodRepository.delete(periodId);
     }
 
     @Override
     public Period findById(Long periodId) {
         if (periodId == null || periodId <= 0L) {
-            return null;
+            throw new PeriodExceptions("Period id is invalid");
         }
-        return periodRepository.findById(periodId);
+
+        Period period = periodRepository.findById(periodId);
+
+        if (period == null) {
+            throw PeriodExceptions.noEncontrado(periodId);
+        }
+
+        return period;
     }
 
     @Override
@@ -55,22 +77,23 @@ public class PeriodServiceImpl implements PeriodService {
     @Override
     public Period findByCode(String code) {
         if (code == null || code.trim().isBlank()) {
-            return null;
+            throw new PeriodExceptions("Code cannot be null or empty");
         }
+
         return periodRepository.findByCode(code);
     }
 
     @Override
     public boolean existsByCode(String code) {
         if (code == null || code.trim().isBlank()) {
-            return false;
+            throw new PeriodExceptions("Code cannot be null or empty");
         }
+
         return periodRepository.existsByCode(code);
     }
 
     private boolean isInvalidPeriod(Period period) {
-        return period == null
-                || isBlank(period.getCode())
+        return isBlank(period.getCode())
                 || isBlank(period.getStartDate())
                 || isBlank(period.getEndDate());
     }
