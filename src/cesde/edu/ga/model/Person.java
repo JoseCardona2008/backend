@@ -42,6 +42,9 @@ public abstract class Person{
     }
 
     public void setDocumentNumber(String documentNumber) {
+        if (documentNumber == null || documentNumber.trim().isEmpty()) {
+            throw new IllegalArgumentException("El documento es obligatorio");
+        }
         this.documentNumber = documentNumber;
     }
 
@@ -50,6 +53,9 @@ public abstract class Person{
     }
 
     public void setFirstName(String firstName) {
+        if (firstName == null || firstName.trim().isEmpty()) {
+            throw new IllegalArgumentException("El nombre es obligatorio");
+        }
         this.firstName = firstName;
     }
 
@@ -58,6 +64,10 @@ public abstract class Person{
     }
 
     public void setLastName(String lastName) {
+        if (lastName == null || lastName.trim().isEmpty()) {
+            throw new IllegalArgumentException("El apellido es obligatorio");
+        }
+
         this.lastName = lastName;
     }
 
