@@ -1,7 +1,9 @@
 package cesde.edu.ga.service.impl;
 
 import cesde.edu.ga.model.Grade;
+import cesde.edu.ga.model.Enrollment;
 import cesde.edu.ga.repository.GradeRepository;
+import cesde.edu.ga.repository.EnrollmentRepository;
 import cesde.edu.ga.service.GradeService;
 import cesde.edu.ga.exceptions.GradeExceptions;
 
@@ -9,17 +11,17 @@ import java.util.List;
 
 public class GradeServiceImpl implements GradeService {
 
-    private GradeRepository repository;
+    private final GradeRepository repository;
+    private final EnrollmentRepository enrollmentRepository;
 
-    public GradeServiceImpl(GradeRepository repository) {
+    public GradeServiceImpl(GradeRepository repository, EnrollmentRepository enrollmentRepository) {
         this.repository = repository;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     @Override
     public Grade create(Grade grade) {
-        if (grade == null) {
-            throw new GradeExceptions("Grade cannot be null");
-        }
+        validateGrade(grade);
 
         return repository.create(grade);
     }
@@ -33,6 +35,8 @@ public class GradeServiceImpl implements GradeService {
         if (grade.getGradeId() == null) {
             throw new GradeExceptions("Grade id cannot be null");
         }
+
+        validateGrade(grade);
 
         return repository.update(grade);
     }
@@ -82,5 +86,26 @@ public class GradeServiceImpl implements GradeService {
         }
 
         return repository.findByGroupSubjectId(groupSubjectId);
+    }
+
+    private void validateGrade(Grade grade) {
+        if (grade == null) {
+            throw new GradeExceptions("Grade cannot be null");
+        }
+
+        if (grade.getEnrollmentId() == null) {
+            throw new GradeExceptions("El id de la matrícula es obligatorio");
+        }
+
+        // 1. Validar que la nota esté dentro del rango permitido (0.0 a 5.0)
+        if (grade.getFinalScore() == null || grade.getFinalScore() < 0.0 || grade.getFinalScore() > 5.0) {
+            throw GradeExceptions.notaInvalida(grade.getFinalScore());
+        }
+
+        // 2. Validar que la matrícula exista
+        Enrollment enrollment = enrollmentRepository.findById(grade.getEnrollmentId());
+        if (enrollment == null) {
+            throw new GradeExceptions("La matrícula con id " + grade.getEnrollmentId() + " no existe.");
+        }
     }
 }

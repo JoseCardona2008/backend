@@ -2,24 +2,30 @@ package cesde.edu.ga.service.impl;
 
 import cesde.edu.ga.exceptions.EnrollmentExceptions;
 import cesde.edu.ga.model.Enrollment;
+import cesde.edu.ga.model.Student;
+import cesde.edu.ga.model.Group;
 import cesde.edu.ga.repository.EnrollmentRepository;
+import cesde.edu.ga.repository.StudentRepository;
+import cesde.edu.ga.repository.GroupRepository;
 import cesde.edu.ga.service.EnrollmentService;
 
 import java.util.List;
 
 public class EnrollmentServiceImpl implements EnrollmentService {
 
-    private EnrollmentRepository repository;
+    private final EnrollmentRepository repository;
+    private final StudentRepository studentRepository;
+    private final GroupRepository groupRepository;
 
-    public EnrollmentServiceImpl(EnrollmentRepository repository) {
+    public EnrollmentServiceImpl(EnrollmentRepository repository, StudentRepository studentRepository, GroupRepository groupRepository) {
         this.repository = repository;
+        this.studentRepository = studentRepository;
+        this.groupRepository = groupRepository;
     }
 
     @Override
     public Enrollment create(Enrollment enrollment) {
-        if (enrollment == null) {
-            throw new EnrollmentExceptions("La matrícula no puede ser nula");
-        }
+        validateEnrollment(enrollment);
 
         return repository.create(enrollment);
     }
@@ -33,6 +39,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         if (enrollment.getEnrollmentId() == null) {
             throw new EnrollmentExceptions("El id de la matrícula no puede ser nulo");
         }
+
+        validateEnrollment(enrollment);
 
         return repository.update(enrollment);
     }
@@ -91,5 +99,59 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         }
 
         return repository.findByPeriodId(periodId);
+    }
+
+    private void validateEnrollment(Enrollment enrollment) {
+        if (enrollment == null) {
+            throw new EnrollmentExceptions("La matrícula no puede ser nula");
+        }
+
+        if (enrollment.getStudentId() == null) {
+            throw new EnrollmentExceptions("El id del estudiante es obligatorio");
+        }
+
+        if (enrollment.getGroupId() == null) {
+            throw new EnrollmentExceptions("El id del grupo es obligatorio");
+        }
+
+        // 1. Validar que el estudiante exista
+        Student student = studentRepository.findById(enrollment.getStudentId());
+        if (student == null) {
+            throw new EnrollmentExceptions("El estudiante con id " + enrollment.getStudentId() + " no existe.");
+        }
+
+        // 2. Validar que el grupo exista
+        Group group = groupRepository.findById(enrollment.getGroupId());
+        if (group == null) {
+            throw new EnrollmentExceptions("El grupo con id " + enrollment.getGroupId() + " no existe.");
+        }
+
+        // 3. Validar que no esté matriculado dos veces
+        List<Enrollment> studentEnrollments = repository.findByStudentId(enrollment.getStudentId());
+        for (Enrollment existing : studentEnrollments) {
+            if (existing.getGroupId().equals(enrollment.getGroupId())) {
+                if (enrollment.getEnrollmentId() == null || !enrollment.getEnrollmentId().equals(existing.getEnrollmentId())) {
+                    throw EnrollmentExceptions.duplicada(enrollment.getStudentId(), enrollment.getGroupId());
+                }
+            }
+        }
+
+        // 4. Validar que haya cupos disponibles
+        List<Enrollment> groupEnrollments = repository.findByGroupId(enrollment.getGroupId());
+        int count = 0;
+        for (Enrollment existing : groupEnrollments) {
+            if (enrollment.getEnrollmentId() == null || !enrollment.getEnrollmentId().equals(existing.getEnrollmentId())) {
+                count++;
+            }
+        }
+
+        Integer capacity = group.getCapacity();
+        if (capacity == null) {
+            capacity = 30; // fallback
+        }
+        if (count >= capacity) {
+            throw new EnrollmentExceptions("No hay cupos disponibles en el grupo con id: " + enrollment.getGroupId()
+                    + " (Capacidad máxima: " + capacity + ")");
+        }
     }
 }

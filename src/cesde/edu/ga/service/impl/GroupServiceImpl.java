@@ -17,15 +17,13 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public Group create(Group group) {
-        if (group == null) {
-            throw new GroupExceptions("Group cannot be null");
-        }
+        validateGroup(group);
 
-        if (isInvalidGroup(group)) {
-            throw new GroupExceptions("Invalid group data");
+        Group created = groupRepository.create(group);
+        if (created == null) {
+            throw new GroupExceptions("Error al crear el grupo. Probablemente código duplicado.");
         }
-
-        return groupRepository.create(group);
+        return created;
     }
 
     @Override
@@ -38,9 +36,7 @@ public class GroupServiceImpl implements GroupService {
             throw new GroupExceptions("Group id is invalid");
         }
 
-        if (isInvalidGroup(group)) {
-            throw new GroupExceptions("Invalid group data");
-        }
+        validateGroup(group);
 
         return groupRepository.update(group);
     }
@@ -74,13 +70,34 @@ public class GroupServiceImpl implements GroupService {
         return groupRepository.findAll();
     }
 
-    private boolean isInvalidGroup(Group group) {
-        return isBlank(group.getCode())
-                || group.getProgramId() == null
-                || group.getProgramId() <= 0L
-                || group.getPeriodId() == null
-                || group.getPeriodId() <= 0L
-                || isBlank(group.getSchedule());
+    private void validateGroup(Group group) {
+        if (group == null) {
+            throw new GroupExceptions("Group cannot be null");
+        }
+
+        if (isBlank(group.getCode())) {
+            throw new GroupExceptions("El código del grupo es obligatorio");
+        }
+
+        if (isBlank(group.getName())) {
+            throw new GroupExceptions("El nombre del grupo es obligatorio");
+        }
+
+        if (group.getCapacity() == null || group.getCapacity() <= 0) {
+            throw new GroupExceptions("La capacidad del grupo debe ser mayor que cero");
+        }
+
+        if (group.getProgramId() == null || group.getProgramId() <= 0L) {
+            throw new GroupExceptions("El id del programa es inválido o nulo");
+        }
+
+        if (group.getPeriodId() == null || group.getPeriodId() <= 0L) {
+            throw new GroupExceptions("El id del período es inválido o nulo");
+        }
+
+        if (isBlank(group.getSchedule())) {
+            throw new GroupExceptions("El horario del grupo es obligatorio");
+        }
     }
 
     private boolean isBlank(String value) {

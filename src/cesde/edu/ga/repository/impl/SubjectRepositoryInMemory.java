@@ -87,7 +87,8 @@ public class SubjectRepositoryInMemory implements SubjectRepository {
     @Override
     public boolean update(Subject updatedSubject) {
         if (updatedSubject == null) return false;
-        if (findByCode(updatedSubject.getCode()) != null){
+        Subject existing = findByCode(updatedSubject.getCode());
+        if (existing != null && !existing.getSubjectId().equals(updatedSubject.getSubjectId())){
             return false;
         }
 

@@ -17,15 +17,13 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student create(Student student) {
-        if (student == null) {
-            throw new StudentExceptions("Student cannot be null");
-        }
+        validateStudent(student, false);
 
-        if (isInvalidStudent(student)) {
-            throw new StudentExceptions("Invalid student data");
+        Student created = studentRepository.create(student);
+        if (created == null) {
+            throw new StudentExceptions("Error al crear el estudiante. Probablemente conflicto de documento.");
         }
-
-        return studentRepository.create(student);
+        return created;
     }
 
     @Override
@@ -38,9 +36,7 @@ public class StudentServiceImpl implements StudentService {
             throw new StudentExceptions("Student id is invalid");
         }
 
-        if (isInvalidStudent(student)) {
-            throw new StudentExceptions("Invalid student data");
-        }
+        validateStudent(student, true);
 
         return studentRepository.update(student);
     }
@@ -83,13 +79,47 @@ public class StudentServiceImpl implements StudentService {
         return studentRepository.findByDocumentNumber(documentNumber);
     }
 
-    private boolean isInvalidStudent(Student student) {
-        return isBlank(student.getFirstName())
-                || isBlank(student.getLastName())
-                || isBlank(student.getDocumentType())
-                || isBlank(student.getDocumentNumber())
-                || isBlank(student.getBirthDate())
-                || isBlank(student.getStatus());
+    private void validateStudent(Student student, boolean isUpdate) {
+        if (student == null) {
+            throw new StudentExceptions("Student cannot be null");
+        }
+
+        if (isBlank(student.getFirstName()) || isBlank(student.getLastName())) {
+            throw new StudentExceptions("El nombre y apellido del estudiante son obligatorios");
+        }
+
+        if (isBlank(student.getDocumentType()) || isBlank(student.getDocumentNumber())) {
+            throw new StudentExceptions("El tipo y número de documento son obligatorios");
+        }
+
+        if (isBlank(student.getStatus())) {
+            throw new StudentExceptions("El estado del estudiante es obligatorio");
+        }
+
+        // 1. Validar documento único
+        Student existing = studentRepository.findByDocumentNumber(student.getDocumentNumber());
+        if (existing != null) {
+            if (!isUpdate || !existing.getStudentId().equals(student.getStudentId())) {
+                throw new StudentExceptions("Ya existe un estudiante con el documento: " + student.getDocumentNumber());
+            }
+        }
+
+        // 2. Validar edad válida (fecha de nacimiento válida y coherente)
+        if (isBlank(student.getBirthDate())) {
+            throw new StudentExceptions("La fecha de nacimiento es obligatoria");
+        }
+        try {
+            java.time.LocalDate birth = java.time.LocalDate.parse(student.getBirthDate());
+            if (birth.isAfter(java.time.LocalDate.now())) {
+                throw StudentExceptions.fechaNacimientoInvalida(student.getBirthDate() + " (Fecha en el futuro)");
+            }
+            int age = java.time.Period.between(birth, java.time.LocalDate.now()).getYears();
+            if (age < 5 || age > 120) {
+                throw StudentExceptions.fechaNacimientoInvalida(student.getBirthDate() + " (Debe tener entre 5 y 120 años)");
+            }
+        } catch (java.time.format.DateTimeParseException e) {
+            throw StudentExceptions.fechaNacimientoInvalida(student.getBirthDate() + " (Formato inválido)");
+        }
     }
 
     private boolean isBlank(String value) {
