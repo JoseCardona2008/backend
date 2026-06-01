@@ -17,15 +17,13 @@ public class PeriodServiceImpl implements PeriodService {
 
     @Override
     public Period create(Period period) {
-        if (period == null) {
-            throw new PeriodExceptions("Period cannot be null");
-        }
+        validatePeriod(period);
 
-        if (isInvalidPeriod(period)) {
-            throw new PeriodExceptions("Invalid period data");
+        Period created = periodRepository.create(period);
+        if (created == null) {
+            throw new PeriodExceptions("Error al crear el período. Probablemente código duplicado.");
         }
-
-        return periodRepository.create(period);
+        return created;
     }
 
     @Override
@@ -38,9 +36,7 @@ public class PeriodServiceImpl implements PeriodService {
             throw new PeriodExceptions("Period id is invalid");
         }
 
-        if (isInvalidPeriod(period)) {
-            throw new PeriodExceptions("Invalid period data");
-        }
+        validatePeriod(period);
 
         return periodRepository.update(period);
     }
@@ -92,10 +88,29 @@ public class PeriodServiceImpl implements PeriodService {
         return periodRepository.existsByCode(code);
     }
 
-    private boolean isInvalidPeriod(Period period) {
-        return isBlank(period.getCode())
-                || isBlank(period.getStartDate())
-                || isBlank(period.getEndDate());
+    private void validatePeriod(Period period) {
+        if (period == null) {
+            throw new PeriodExceptions("Period cannot be null");
+        }
+
+        if (isBlank(period.getCode())) {
+            throw new PeriodExceptions("El código del período es obligatorio");
+        }
+
+        if (isBlank(period.getStartDate()) || isBlank(period.getEndDate())) {
+            throw new PeriodExceptions("Las fechas de inicio y fin son obligatorias");
+        }
+
+        try {
+            java.time.LocalDate start = java.time.LocalDate.parse(period.getStartDate());
+            java.time.LocalDate end = java.time.LocalDate.parse(period.getEndDate());
+
+            if (!start.isBefore(end)) {
+                throw PeriodExceptions.fechasInvalidas(period.getStartDate(), period.getEndDate());
+            }
+        } catch (java.time.format.DateTimeParseException e) {
+            throw new PeriodExceptions("Formato de fecha inválido. Debe ser YYYY-MM-DD.");
+        }
     }
 
     private boolean isBlank(String value) {

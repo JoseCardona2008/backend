@@ -75,7 +75,8 @@ public class PeriodRepositoryInMemory implements PeriodRepository {
             return false;
         }
 
-        if (findByCode(updatedPeriod.getCode()) != null) {
+        Period existing = findByCode(updatedPeriod.getCode());
+        if (existing != null && !existing.getPeriodId().equals(updatedPeriod.getPeriodId())){
             return false;
         }
 

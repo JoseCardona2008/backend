@@ -17,13 +17,7 @@ public class ProgramServiceImpl implements ProgramService {
 
     @Override
     public Program create(Program program) {
-        if (program == null) {
-            throw new ProgramExceptions("Program cannot be null");
-        }
-
-        if (isInvalidProgram(program)) {
-            throw new ProgramExceptions("Invalid program data");
-        }
+        validateProgram(program);
 
         return programRepository.create(program);
     }
@@ -38,9 +32,7 @@ public class ProgramServiceImpl implements ProgramService {
             throw new ProgramExceptions("Program id is invalid");
         }
 
-        if (isInvalidProgram(program)) {
-            throw new ProgramExceptions("Invalid program data");
-        }
+        validateProgram(program);
 
         return programRepository.update(program);
     }
@@ -74,9 +66,16 @@ public class ProgramServiceImpl implements ProgramService {
         return programRepository.findAll();
     }
 
-    private boolean isInvalidProgram(Program program) {
-        return isBlank(program.getCode())
-                || isBlank(program.getName());
+    private void validateProgram(Program program) {
+        if (program == null) {
+            throw new ProgramExceptions("Program cannot be null");
+        }
+        if (isBlank(program.getName())) {
+            throw new ProgramExceptions("El nombre del programa es obligatorio");
+        }
+        if (isBlank(program.getCode())) {
+            throw new ProgramExceptions("El código del programa es obligatorio");
+        }
     }
 
     private boolean isBlank(String value) {

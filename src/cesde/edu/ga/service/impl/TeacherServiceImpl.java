@@ -17,15 +17,13 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public Teacher create(Teacher teacher) {
-        if (teacher == null) {
-            throw new TeacherExceptions("Teacher cannot be null");
-        }
+        validateTeacher(teacher, false);
 
-        if (isInvalidTeacher(teacher)) {
-            throw new TeacherExceptions("Invalid teacher data");
+        Teacher created = teacherRepository.create(teacher);
+        if (created == null) {
+            throw new TeacherExceptions("Error al crear el docente. Probablemente conflicto de documento.");
         }
-
-        return teacherRepository.create(teacher);
+        return created;
     }
 
     @Override
@@ -38,9 +36,7 @@ public class TeacherServiceImpl implements TeacherService {
             throw new TeacherExceptions("Teacher id is invalid");
         }
 
-        if (isInvalidTeacher(teacher)) {
-            throw new TeacherExceptions("Invalid teacher data");
-        }
+        validateTeacher(teacher, true);
 
         return teacherRepository.update(teacher);
     }
@@ -83,12 +79,34 @@ public class TeacherServiceImpl implements TeacherService {
         return teacherRepository.findByDocumentNumber(documentNumber);
     }
 
-    private boolean isInvalidTeacher(Teacher teacher) {
-        return isBlank(teacher.getFirstName())
-                || isBlank(teacher.getLastName())
-                || isBlank(teacher.getDocumentType())
-                || isBlank(teacher.getDocumentNumber())
-                || isBlank(teacher.getStatus());
+    private void validateTeacher(Teacher teacher, boolean isUpdate) {
+        if (teacher == null) {
+            throw new TeacherExceptions("Teacher cannot be null");
+        }
+
+        if (isBlank(teacher.getFirstName()) || isBlank(teacher.getLastName())) {
+            throw new TeacherExceptions("El nombre y apellido del docente son obligatorios");
+        }
+
+        if (isBlank(teacher.getDocumentType()) || isBlank(teacher.getDocumentNumber())) {
+            throw new TeacherExceptions("El tipo y número de documento son obligatorios");
+        }
+
+        if (isBlank(teacher.getStatus())) {
+            throw new TeacherExceptions("El estado del docente es obligatorio");
+        }
+
+        if (isBlank(teacher.getSpecialty())) {
+            throw new TeacherExceptions("La especialidad del docente es obligatoria");
+        }
+
+        // Validar documento único
+        Teacher existing = teacherRepository.findByDocumentNumber(teacher.getDocumentNumber());
+        if (existing != null) {
+            if (!isUpdate || !existing.getTeacherId().equals(teacher.getTeacherId())) {
+                throw new TeacherExceptions("Ya existe un docente con el documento: " + teacher.getDocumentNumber());
+            }
+        }
     }
 
     private boolean isBlank(String value) {

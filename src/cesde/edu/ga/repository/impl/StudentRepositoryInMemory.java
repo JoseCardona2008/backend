@@ -90,7 +90,8 @@ public class StudentRepositoryInMemory implements StudentRepository {
     @Override
     public boolean update(Student updatedStudent) {
         if (updatedStudent == null) return false;
-        if (findByDocumentNumber(updatedStudent.getDocumentNumber()) != null){
+        Student existing = findByDocumentNumber(updatedStudent.getDocumentNumber());
+        if (existing != null && !existing.getStudentId().equals(updatedStudent.getStudentId())){
             return false;
         }
 

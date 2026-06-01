@@ -90,7 +90,8 @@ public class TeacherRepositoryInMemory implements TeacherRepository {
     @Override
     public boolean update(Teacher updatedTeacher) {
         if (updatedTeacher == null) return false;
-        if (findByDocumentNumber(updatedTeacher.getDocumentNumber()) != null){
+        Teacher existing = findByDocumentNumber(updatedTeacher.getDocumentNumber());
+        if (existing != null && !existing.getTeacherId().equals(updatedTeacher.getTeacherId())){
             return false;
         }
 

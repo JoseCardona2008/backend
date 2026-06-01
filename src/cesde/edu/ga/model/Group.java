@@ -6,6 +6,8 @@ public class Group {
     private Long programId;
     private Long periodId;
     private String schedule;
+    private String name;
+    private Integer capacity;
 
     public Group() {
     }
@@ -16,7 +18,20 @@ public class Group {
         this.programId = programId;
         this.periodId = periodId;
         this.schedule = schedule;
+        this.name = "";
+        this.capacity = 30; // default capacity
     }
+
+    public Group(Long groupId, String code, Long programId, Long periodId, String schedule, String name, Integer capacity) {
+        this.groupId = groupId;
+        this.code = code;
+        this.programId = programId;
+        this.periodId = periodId;
+        this.schedule = schedule;
+        this.name = name;
+        this.capacity = capacity;
+    }
+
 
     public Long getGroupId() {
         return groupId;
@@ -56,6 +71,22 @@ public class Group {
 
     public void setSchedule(String schedule) {
         this.schedule = schedule;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Integer getCapacity() {
+        return capacity;
+    }
+
+    public void setCapacity(Integer capacity) {
+        this.capacity = capacity;
     }
 }
 
