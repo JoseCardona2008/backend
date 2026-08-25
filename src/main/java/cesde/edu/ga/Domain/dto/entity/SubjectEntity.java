@@ -1,4 +1,4 @@
-package cesde.edu.ga.entity;
+package cesde.edu.ga.Domain.dto.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,7 +25,4 @@ public class SubjectEntity {
     @JoinColumn(name = "profesor_id", nullable = false)
     private TeacherEntity profesor;
 
-    @ManyToOne
-    @JoinColumn(name = "programa_id", nullable = false)
-    private ProgramEntity programa;
 }

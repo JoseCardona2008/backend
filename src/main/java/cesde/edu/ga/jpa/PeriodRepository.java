@@ -1,6 +1,6 @@
 package cesde.edu.ga.jpa;
 
-import cesde.edu.ga.entity.PeriodEntity;
+import cesde.edu.ga.Domain.dto.entity.PeriodEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

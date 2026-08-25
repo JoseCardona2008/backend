@@ -1,4 +1,4 @@
-package cesde.edu.ga.dto;
+package cesde.edu.ga.Domain.dto;
 
 public class GroupSubjectDTO {
     private Long id;

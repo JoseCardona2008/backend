@@ -1,4 +1,4 @@
-package cesde.edu.ga.entity;
+package cesde.edu.ga.Domain.dto.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

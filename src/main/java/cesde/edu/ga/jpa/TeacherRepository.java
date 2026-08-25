@@ -1,6 +1,6 @@
 package cesde.edu.ga.jpa;
 
-import cesde.edu.ga.entity.TeacherEntity;
+import cesde.edu.ga.Domain.dto.entity.TeacherEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
