@@ -39,7 +39,6 @@ build/
 
 ### intellinj ###
 .idea/
-pom.xml
 
 ### Build Output ###
 out/
