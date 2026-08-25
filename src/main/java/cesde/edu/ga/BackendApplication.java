@@ -1,4 +1,4 @@
-package cesde.edu.ga.presentation;
+package cesde.edu.ga;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
