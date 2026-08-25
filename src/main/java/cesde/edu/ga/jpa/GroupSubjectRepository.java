@@ -1,4 +1,4 @@
-package cesde.edu.ga.repository.jpa;
+package cesde.edu.ga.jpa;
 
 import cesde.edu.ga.entity.GroupSubjectEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
